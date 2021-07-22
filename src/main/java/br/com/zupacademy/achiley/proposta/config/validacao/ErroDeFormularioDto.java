@@ -1,9 +1,10 @@
 package br.com.zupacademy.achiley.proposta.config.validacao;
 
 public class ErroDeFormularioDto {
+
 	private String campo;
 	private String erro;
-	
+
 	public ErroDeFormularioDto(String campo, String erro) {
 		this.campo = campo;
 		this.erro = erro;
@@ -16,4 +17,5 @@ public class ErroDeFormularioDto {
 	public String getErro() {
 		return erro;
 	}
+
 }
