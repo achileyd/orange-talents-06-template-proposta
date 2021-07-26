@@ -15,26 +15,47 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.zupacademy.achiley.proposta.propostas.analise.AnalisadorDeProposta;
+import br.com.zupacademy.achiley.proposta.shared.ContextoTransacional;
+
 @RestController
 public class PropostasController {
 	
-	@Autowired
 	private PropostaRepository repository;
 	
+	private ContextoTransacional transacional;
+	
+	private AnalisadorDeProposta analisador;
+	
+	
+	@Autowired
+	public PropostasController(PropostaRepository repository, ContextoTransacional transacional,
+			AnalisadorDeProposta analisador) {
+		this.repository = repository;
+		this.transacional = transacional;
+		this.analisador = analisador;
+	}
+
 	@PostMapping(value="/propostas")
 	@Transactional
 	public ResponseEntity<?> criar(@RequestBody @Valid NovaPropostaRequest request, UriComponentsBuilder uriBuilder) {
-		Optional <Proposta> optional = repository.findByDocumento(request.getDocumento());
+		Optional <Proposta> possivelProposta = repository.findByDocumento(request.getDocumento());
 		
-		if(!optional.isEmpty()) {
+		if(!possivelProposta.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 		
 		Proposta proposta = request.converter();
-		repository.save(proposta);
+		transacional.persiste(proposta);
+		
+		StatusDaPropostaEnum resultadoDaAnalise = analisador.analisa(proposta);
+		proposta.atualizaStatusDaProposta(resultadoDaAnalise);
+		
+		transacional.atualiza(proposta);
 		
 		URI uri = uriBuilder.path("/propostas/{id}").build(proposta.getId());
 		
 		return ResponseEntity.created(uri).build();
 	}
+
 }
