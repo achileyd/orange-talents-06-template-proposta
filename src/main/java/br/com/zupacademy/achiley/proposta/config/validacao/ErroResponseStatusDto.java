@@ -2,11 +2,11 @@ package br.com.zupacademy.achiley.proposta.config.validacao;
 
 import org.springframework.web.server.ResponseStatusException;
 
-public class ResponseStatusExceptionHandlerDto {
+public class ErroResponseStatusDto {
 	private String message;
 	private String reason;
 
-	public ResponseStatusExceptionHandlerDto(ResponseStatusException e) {
+	public ErroResponseStatusDto(ResponseStatusException e) {
 		this.message = e.getMessage();
 		this.reason = e.getReason();
 	}

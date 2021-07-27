@@ -106,6 +106,10 @@ public class Proposta {
 		return documento;
 	}
 
+	public StatusDaPropostaEnum getStatus() {
+		return status;
+	}
+
 	public void atualizaStatusDaProposta(StatusDaPropostaEnum status) {
 		Assert.isTrue(this.status.equals(StatusDaPropostaEnum.PENDENTE) || 
 					  this.status.equals(StatusDaPropostaEnum.NAO_ELEGIVEL),

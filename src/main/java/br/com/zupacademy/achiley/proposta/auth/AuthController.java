@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.zupacademy.achiley.proposta.config.security.TokenDto;
+import br.com.zupacademy.achiley.proposta.config.security.TokenResponse;
 import br.com.zupacademy.achiley.proposta.config.security.TokenService;
 
 @RestController
@@ -24,13 +24,13 @@ public class AuthController {
 	private TokenService tokenService;
 
 	@PostMapping("/auth")
-	public ResponseEntity<TokenDto> autenticar(@RequestBody @Valid LoginForm form) {
+	public ResponseEntity<TokenResponse> autenticar(@RequestBody @Valid LoginRequest form) {
 		UsernamePasswordAuthenticationToken dadosLogin = form.converter();
 		
 		try {
 			Authentication authentication = authManager.authenticate(dadosLogin);
 			String token = tokenService.gerarToken(authentication);
-			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
+			return ResponseEntity.ok(new TokenResponse(token, "Bearer"));
 		} catch (AuthenticationException e) {
 			return ResponseEntity.badRequest().build();
 		}

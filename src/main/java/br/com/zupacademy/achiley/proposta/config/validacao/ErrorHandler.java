@@ -25,21 +25,21 @@ public class ErrorHandler {
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public List<ErroDeFormularioDto> handleValidationError(MethodArgumentNotValidException exception) {
-		List<ErroDeFormularioDto> dto = new ArrayList<>();
+		List<ErroDeFormularioDto> erroFormDto = new ArrayList<>();
 		
 		List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
 		fieldErrors.forEach(e -> {
 			String mensagem = messageSource.getMessage(e, LocaleContextHolder.getLocale());
 			ErroDeFormularioDto erro = new ErroDeFormularioDto(e.getField(), mensagem);
-			dto.add(erro);
+			erroFormDto.add(erro);
 		});
 		
-		return dto;
+		return erroFormDto;
 	}
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ResponseStatusExceptionHandlerDto> handle(ResponseStatusException exception){
-        ResponseStatusExceptionHandlerDto dto = new ResponseStatusExceptionHandlerDto(exception);
-        return ResponseEntity.status(exception.getStatus()).body(dto);
+    public ResponseEntity<ErroResponseStatusDto> handle(ResponseStatusException exception){
+        ErroResponseStatusDto erroResponseDto = new ErroResponseStatusDto(exception);
+        return ResponseEntity.status(exception.getStatus()).body(erroResponseDto);
     }
 
 }

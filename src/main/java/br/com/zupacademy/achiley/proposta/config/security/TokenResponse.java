@@ -1,10 +1,10 @@
 package br.com.zupacademy.achiley.proposta.config.security;
 
-public class TokenDto {
+public class TokenResponse {
 	private String token;
 	private String tipo;
 
-	public TokenDto(String token, String tipo) {
+	public TokenResponse(String token, String tipo) {
 		this.token = token;
 		this.tipo = tipo;
 	}

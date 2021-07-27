@@ -2,7 +2,7 @@ package br.com.zupacademy.achiley.proposta.auth;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-public class LoginForm {
+public class LoginRequest {
 
 	private String email;
 	private String senha;

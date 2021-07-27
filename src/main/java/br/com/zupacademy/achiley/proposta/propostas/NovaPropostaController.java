@@ -21,16 +21,16 @@ import br.com.zupacademy.achiley.proposta.propostas.analise.AnalisadorDeProposta
 import br.com.zupacademy.achiley.proposta.shared.ContextoTransacional;
 
 @RestController
-public class PropostasController {
+public class NovaPropostaController {
 	
 	private PropostaRepository repository;
 	private ContextoTransacional transacional;
 	private AnalisadorDeProposta analisador;
 	
-	private final Logger logger = LoggerFactory.getLogger(PropostasController.class);
+	private final Logger logger = LoggerFactory.getLogger(NovaPropostaController.class);
 	
 	@Autowired
-	public PropostasController(PropostaRepository repository, ContextoTransacional transacional,
+	public NovaPropostaController(PropostaRepository repository, ContextoTransacional transacional,
 			AnalisadorDeProposta analisador) {
 		this.repository = repository;
 		this.transacional = transacional;
@@ -42,7 +42,7 @@ public class PropostasController {
 	public ResponseEntity<?> criar(@RequestBody @Valid NovaPropostaRequest request, UriComponentsBuilder uriBuilder) {
 		Optional <Proposta> possivelProposta = repository.findByDocumento(request.getDocumento());
 		
-		if(!possivelProposta.isEmpty()) {
+		if(!possivelProposta.isPresent()) {
 			logger.info("Documento {} duplicado!", request.getDocumento());
 			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
 		}
