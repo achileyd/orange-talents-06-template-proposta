@@ -2,6 +2,7 @@ package br.com.zupacademy.achiley.proposta.propostas;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -39,6 +40,8 @@ public class Proposta {
 	private BigDecimal salario;
 	@Enumerated(EnumType.STRING)
 	private StatusDaPropostaEnum status = StatusDaPropostaEnum.PENDENTE;
+	@Column(unique = true)
+	private String cartao;
 	
 	@Deprecated
 	public Proposta() {
@@ -108,5 +111,11 @@ public class Proposta {
 					  this.status.equals(StatusDaPropostaEnum.NAO_ELEGIVEL),
 					  "A proposta ja esta definida como elegivel e nao pode ser alterada");
 		this.status = status;
+	}
+	
+	public void associaCartao(@NotNull String numeroDoCartaoRecebido) {
+		Assert.isTrue(this.status.equals(StatusDaPropostaEnum.ELEGIVEL),
+				      "Nao e possivel associar um cartao a uma proposta com o status pendente ou nao elegivel");
+		this.cartao = numeroDoCartaoRecebido;
 	}
 }
