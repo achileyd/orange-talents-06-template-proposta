@@ -42,7 +42,7 @@ public class NovaPropostaController {
 	public ResponseEntity<?> criar(@RequestBody @Valid NovaPropostaRequest request, UriComponentsBuilder uriBuilder) {
 		Optional <Proposta> possivelProposta = repository.findByDocumento(request.getDocumento());
 		
-		if(!possivelProposta.isPresent()) {
+		if(!possivelProposta.isEmpty()) {
 			logger.info("Documento {} duplicado!", request.getDocumento());
 			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
 		}

@@ -1,10 +1,10 @@
-package br.com.zupacademy.achiley.propostas;
+package br.com.zupacademy.achiley.proposta;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PropostasApplicationTests {
+class PropostaApplicationTests {
 
 	@Test
 	void contextLoads() {
