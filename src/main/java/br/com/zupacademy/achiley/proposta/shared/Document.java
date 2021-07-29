@@ -22,7 +22,9 @@ import org.hibernate.validator.constraints.br.CPF;
 @CPF
 @CNPJ
 public @interface Document {
-    String message() default "{beanvalidation.documento}";
+    String message() default "{br.com.zupacademy.achiley.proposta.shared.Document}";
+    
     Class<?>[] groups() default {};
+    
     Class<? extends Payload>[] payload() default {};
 }

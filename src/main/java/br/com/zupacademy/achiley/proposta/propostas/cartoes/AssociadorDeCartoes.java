@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import br.com.zupacademy.achiley.proposta.cartao.Cartao;
 import br.com.zupacademy.achiley.proposta.integracoes.IntegracaoCartoes;
 import br.com.zupacademy.achiley.proposta.propostas.Proposta;
 import br.com.zupacademy.achiley.proposta.propostas.PropostaRepository;
@@ -31,8 +32,6 @@ public class AssociadorDeCartoes {
 		this.transacional = transacional;
 	}
 
-
-
 	@Scheduled(fixedDelayString = "${associa.cartoes.fixed.delay}")
 	public void associa() {
 		List<Proposta> propostasElegiveis = repository.findAllPropostasElegiveisSemCartao();
@@ -41,11 +40,14 @@ public class AssociadorDeCartoes {
 		for (Proposta proposta : propostasElegiveis) {
 			try {
 				CartaoResponse response = integracao.solicitaNumeroDoCartao(new CartaoRequest(proposta));
+				Cartao cartao = new Cartao(proposta,response.getNumeroDoCartao());
+				transacional.persiste(cartao);
 				
-				proposta.associaCartao(response.getNumeroDoCartao());
+				proposta.associaCartao(cartao);
+				
 				transacional.atualiza(proposta);
 				
-				log.info("Foi criado um novo cartão de número {} para a proposta {}.", response.getNumeroDoCartao(), proposta.getId());
+				log.info("Foi criado um novo cartão de número {} para a proposta {}.", cartao.getNumero(), proposta.getId());
 			} catch (FeignException e) {
 				log.error("Não foi possivel criar o cartão para a proposta {}. Motivo: {}", proposta.getId(), e.getMessage());
 			}

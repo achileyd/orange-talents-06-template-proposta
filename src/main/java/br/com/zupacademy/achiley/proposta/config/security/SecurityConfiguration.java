@@ -20,15 +20,18 @@ import br.com.zupacademy.achiley.proposta.usuario.UsuarioRepository;
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
-	@Autowired
 	private AuthService authService;
-	
-	@Autowired
 	private TokenService tokenService;
-	
-	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
+	@Autowired
+	public SecurityConfiguration(AuthService authService, TokenService tokenService,
+			UsuarioRepository usuarioRepository) {
+		this.authService = authService;
+		this.tokenService = tokenService;
+		this.usuarioRepository = usuarioRepository;
+	}
+
 	@Override
 	@Bean
 	protected AuthenticationManager authenticationManager() throws Exception {
@@ -45,6 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 		.antMatchers(HttpMethod.GET, "/propostas/*").permitAll()
 		.antMatchers(HttpMethod.POST, "/propostas").permitAll()
+		.antMatchers(HttpMethod.POST, "/cartoes/**").permitAll()
 		.antMatchers(HttpMethod.POST, "/auth").permitAll()
 		.antMatchers(HttpMethod.GET, "/actuator/**").hasRole("ADMIN")
 		.anyRequest().authenticated()

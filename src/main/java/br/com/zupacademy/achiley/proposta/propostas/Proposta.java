@@ -2,6 +2,7 @@ package br.com.zupacademy.achiley.proposta.propostas;
 
 import java.math.BigDecimal;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -17,6 +19,7 @@ import javax.validation.constraints.Positive;
 
 import org.springframework.util.Assert;
 
+import br.com.zupacademy.achiley.proposta.cartao.Cartao;
 import br.com.zupacademy.achiley.proposta.shared.Document;
 
 @Entity
@@ -27,21 +30,26 @@ public class Proposta {
 	private Long id;
 	@NotBlank
 	@Document
+	@Column(nullable = false)
 	private String documento;
 	@NotBlank
 	@Email
+	@Column(nullable = false)
 	private String email;
 	@NotBlank
+	@Column(nullable = false)
 	private String nome;
 	@NotBlank
+	@Column(nullable = false)
 	private String endereco;
 	@NotNull
 	@Positive
+	@Column(nullable = false)
 	private BigDecimal salario;
 	@Enumerated(EnumType.STRING)
 	private StatusDaPropostaEnum status = StatusDaPropostaEnum.PENDENTE;
-	@Column(unique = true)
-	private String cartao;
+	@OneToOne(mappedBy = "proposta",cascade = CascadeType.MERGE)
+	private Cartao cartao;
 	
 	@Deprecated
 	public Proposta() {
@@ -117,9 +125,11 @@ public class Proposta {
 		this.status = status;
 	}
 	
-	public void associaCartao(@NotNull String numeroDoCartaoRecebido) {
+	public void associaCartao(@NotNull Cartao cartao) {
 		Assert.isTrue(this.status.equals(StatusDaPropostaEnum.ELEGIVEL),
-				      "Nao e possivel associar um cartao a uma proposta com o status pendente ou nao elegivel");
-		this.cartao = numeroDoCartaoRecebido;
+				      "Nao e possivel associar um cartao a uma proposta"
+				      + " com o status pendente ou nao elegivel");
+		Assert.notNull(cartao, "O objeto proposta nao pode estar nulo");
+		this.cartao = cartao;
 	}
 }
