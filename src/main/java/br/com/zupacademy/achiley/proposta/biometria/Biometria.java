@@ -10,8 +10,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.util.Assert;
 
 import br.com.zupacademy.achiley.proposta.cartao.Cartao;
 
@@ -25,6 +27,7 @@ public class Biometria {
     @NotBlank
     @Column(nullable = false)
     private String fingerPrint;
+    @NotNull
     @ManyToOne
     @Valid
     private Cartao cartao;
@@ -35,7 +38,9 @@ public class Biometria {
     	
     }
 
-	public Biometria(@NotBlank String fingerPrint, @Valid Cartao cartao) {
+	public Biometria(@NotBlank String fingerPrint, @NotNull @Valid Cartao cartao) {
+		Assert.hasLength(fingerPrint, "O fingerPrint nao pode estar em branco");
+		Assert.notNull(cartao, "O objeto cartao nao pode estar nulo");
 		this.fingerPrint = fingerPrint;
 		this.cartao = cartao;
 	}
