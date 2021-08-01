@@ -2,6 +2,8 @@ package br.com.zupacademy.achiley.proposta.cartao;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,11 +16,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import br.com.zupacademy.achiley.proposta.aviso_viagem.AvisoDeViagem;
 import br.com.zupacademy.achiley.proposta.biometria.Biometria;
 import br.com.zupacademy.achiley.proposta.bloqueio.BloqueioDeCartoes;
 import br.com.zupacademy.achiley.proposta.propostas.Proposta;
@@ -44,6 +48,9 @@ public class Cartao {
 	private StatusDoCartaoEnum status = StatusDoCartaoEnum.DESBLOQUEADO;
 	@OneToOne(mappedBy = "cartao",cascade = CascadeType.MERGE)
 	private BloqueioDeCartoes bloqueio;
+	@OneToMany(mappedBy = "cartao",cascade = CascadeType.MERGE)
+	@OrderBy("momentoDoAviso asc")
+	private SortedSet<AvisoDeViagem> avisosDeViagem = new TreeSet<>();
 	
 	@Deprecated
 	public Cartao() {
@@ -58,6 +65,37 @@ public class Cartao {
 		this.numero = numero;
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((numero == null) ? 0 : numero.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Cartao other = (Cartao) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (numero == null) {
+			if (other.numero != null)
+				return false;
+		} else if (!numero.equals(other.numero))
+			return false;
+		return true;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -67,7 +105,7 @@ public class Cartao {
 	}
 
 	public void adicionaBiometria(Biometria fingerPrint) {
-		Assert.notNull(fingerPrint, "O fingerPrint nao pode estar em branco");
+		Assert.notNull(fingerPrint, "O objeto fingerPrint nao pode estar nulo");
 		this.biometrias.add(fingerPrint);
 	}
 
@@ -84,4 +122,11 @@ public class Cartao {
 		this.status = StatusDoCartaoEnum.BLOQUEADO;
 		this.bloqueio = bloqueio;
 	}
+
+	public void adicionaAvisoDeViagem(AvisoDeViagem avisoViagem) {
+		Assert.notNull(avisoViagem, "O objeto avisoViagem nao pode estar nulo");
+		this.avisosDeViagem.add(avisoViagem);
+		
+	}
+	
 }

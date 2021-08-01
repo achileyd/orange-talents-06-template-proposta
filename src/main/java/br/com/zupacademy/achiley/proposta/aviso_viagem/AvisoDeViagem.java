@@ -1,5 +1,6 @@
-package br.com.zupacademy.achiley.proposta.bloqueio;
+package br.com.zupacademy.achiley.proposta.aviso_viagem;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -7,37 +8,49 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.Valid;
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import br.com.zupacademy.achiley.proposta.cartao.Cartao;
 
 @Entity
-public class BloqueioDeCartoes {
+@Table(name = "avisos_de_viagem")
+public class AvisoDeViagem implements Comparable<AvisoDeViagem>{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-    @NotBlank
-    @Column(nullable = false)
-    private String ip;
-    @NotBlank
-    @Column(nullable = false)
-    private String userAgent;
-    @NotNull
-    private LocalDateTime momentoDoBloqueio = LocalDateTime.now();
-    @NotNull
-    @OneToOne
-    @Valid
-    private Cartao cartao;
-    
+	@NotBlank
+	@Column(nullable = false)
+	private String destinoDaViagem;
+	@Column(nullable = false)
+	private LocalDateTime momentoDoAviso = LocalDateTime.now();
+	@NotNull
+	@Future
+	@Column(nullable = false)
+	private LocalDate dataTermino; 
+	@NotBlank
+	@Column(nullable = false)
+	private String ip;
+	@NotBlank
+	@Column(nullable = false)
+	private String userAgent;
+	@NotNull
+	@Valid
+	@ManyToOne
+	private Cartao cartao;
+	
     @Deprecated
-    public BloqueioDeCartoes() {
-    	
-    }
-
-	public BloqueioDeCartoes(@NotBlank String ip, @NotBlank String userAgent, @NotNull @Valid Cartao cartao) {
+    public AvisoDeViagem() {
+	}
+    
+	public AvisoDeViagem(@NotBlank String destinoDaViagem, @NotNull @Future LocalDate dataTermino, @NotBlank String ip,
+			@NotBlank String userAgent, @NotNull @Valid Cartao cartao) {
+		this.destinoDaViagem = destinoDaViagem;
+		this.dataTermino = dataTermino;
 		this.ip = ip;
 		this.userAgent = userAgent;
 		this.cartao = cartao;
@@ -60,7 +73,7 @@ public class BloqueioDeCartoes {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BloqueioDeCartoes other = (BloqueioDeCartoes) obj;
+		AvisoDeViagem other = (AvisoDeViagem) obj;
 		if (cartao == null) {
 			if (other.cartao != null)
 				return false;
@@ -73,5 +86,10 @@ public class BloqueioDeCartoes {
 			return false;
 		return true;
 	}
-    
+	
+	@Override
+	public int compareTo(AvisoDeViagem a) {
+		return this.momentoDoAviso.compareTo(a.momentoDoAviso);
+	}
+	
 }
