@@ -19,19 +19,22 @@ import br.com.zupacademy.achiley.proposta.cartao.CartaoRepository;
 import br.com.zupacademy.achiley.proposta.shared.ContextoTransacional;
 
 @RestController
-public class NovoSolicitacaoDeBloqueioController {
+public class NovaSolicitacaoDeBloqueioController {
 	
 	private CartaoRepository repository;
 	private ContextoTransacional transacional;
+	private NotificadorDeBloqueios notificador;
 	
-	private final Logger logger = LoggerFactory.getLogger(NovoSolicitacaoDeBloqueioController.class);
+	private final Logger logger = LoggerFactory.getLogger(NovaSolicitacaoDeBloqueioController.class);
 	
 	@Autowired
-	public NovoSolicitacaoDeBloqueioController(CartaoRepository repository, ContextoTransacional transacional) {
+	public NovaSolicitacaoDeBloqueioController(CartaoRepository repository, ContextoTransacional transacional,
+			NotificadorDeBloqueios notificador) {
 		this.repository = repository;
 		this.transacional = transacional;
+		this.notificador = notificador;
 	}
-	
+
 	@PostMapping(value = "cartoes/{id}/bloqueio")
 	@Transactional
 	public ResponseEntity<?> bloquear(@PathVariable Long id, HttpServletRequest httpRequest) {
@@ -54,6 +57,7 @@ public class NovoSolicitacaoDeBloqueioController {
             		    " O cartão {} já esta bloqueado", cartao.getNumero());
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O cartão ja está bloqueado");
         }
+		notificador.notificaBloqueio(cartao);
 		BloqueioDeCartoes novoBloqueio = new BloqueioDeCartoes(ip, userAgent, cartao);
 		transacional.persiste(novoBloqueio);
 		

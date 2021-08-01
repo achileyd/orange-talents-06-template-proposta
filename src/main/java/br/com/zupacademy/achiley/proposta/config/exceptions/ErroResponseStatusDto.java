@@ -1,4 +1,4 @@
-package br.com.zupacademy.achiley.proposta.config.validacao;
+package br.com.zupacademy.achiley.proposta.config.exceptions;
 
 import org.springframework.web.server.ResponseStatusException;
 
