@@ -104,6 +104,10 @@ public class Cartao {
 		return numero;
 	}
 
+	public SortedSet<AvisoDeViagem> getAvisosDeViagem() {
+		return avisosDeViagem;
+	}
+
 	public void adicionaBiometria(Biometria fingerPrint) {
 		Assert.notNull(fingerPrint, "O objeto fingerPrint nao pode estar nulo");
 		this.biometrias.add(fingerPrint);

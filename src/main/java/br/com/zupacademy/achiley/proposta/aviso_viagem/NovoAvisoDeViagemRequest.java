@@ -22,7 +22,6 @@ public class NovoAvisoDeViagemRequest {
 	public NovoAvisoDeViagemRequest() {
 		
 	}
-	
 	public NovoAvisoDeViagemRequest(@NotBlank String destinoDaViagem, @NotNull @Future LocalDate dataTermino) {
 		this.destinoDaViagem = destinoDaViagem;
 		this.dataTermino = dataTermino;

@@ -1,4 +1,4 @@
-package br.com.zupacademy.achiley.proposta.propostas.cartoes;
+package br.com.zupacademy.achiley.proposta.cartao;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

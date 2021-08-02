@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import br.com.zupacademy.achiley.proposta.bloqueio.NovaSolicitacaoDeBloqueioController;
 import br.com.zupacademy.achiley.proposta.cartao.Cartao;
 import br.com.zupacademy.achiley.proposta.cartao.CartaoRepository;
 import br.com.zupacademy.achiley.proposta.shared.ContextoTransacional;
@@ -26,13 +25,15 @@ public class NovoAvisoDeViagemController {
 	
 	private CartaoRepository repository;
 	private ContextoTransacional transacional;
+	private NotificadorDeViagem notificador;
 
-	private final Logger log = LoggerFactory.getLogger(NovaSolicitacaoDeBloqueioController.class);
+	private final Logger log = LoggerFactory.getLogger(NovoAvisoDeViagemController.class);
 	
 	@Autowired
-	public NovoAvisoDeViagemController(CartaoRepository repository, ContextoTransacional transacional) {
+	public NovoAvisoDeViagemController(CartaoRepository repository, ContextoTransacional transacional, NotificadorDeViagem notificador) {
 		this.repository = repository;
 		this.transacional = transacional;
+		this.notificador = notificador;
 	}
 	
 	@PostMapping(value = "cartoes/{id}/aviso-de-viagem")
@@ -44,15 +45,16 @@ public class NovoAvisoDeViagemController {
 		
 		if(ip.isBlank() || userAgent.isBlank()) {
 			log.info("Ip ou user-agent vazios." +
-					     " user-agent: {}, ip: {}", userAgent, ip);
+					 " user-agent: {}, ip: {}", userAgent, ip);
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-					  "O ip e o user-agent nao podem estar vazios");
+					  						  "O ip e o user-agent nao podem estar vazios");
 		}
 		
 		Cartao cartao = repository.findById(id)
 						.orElseThrow(() 
 						-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartao inexistente"));
 		
+		notificador.notificaViagem(request, cartao);
 		AvisoDeViagem novoAviso = request.converter(ip, userAgent, cartao);
 		transacional.persiste(novoAviso);
 		
