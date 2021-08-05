@@ -35,7 +35,7 @@ services:
     environment:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: keycloak
+      POSTGRES_MULTIPLE_DATABASES: keycloak, propostas
       POSTGRES_HOST: postgres
     networks:
       - propostas-network
@@ -120,7 +120,7 @@ services:
       - analise
       - contas
     environment:
-      DATABASE_URL: jdbc:postgresql://postgres:5432/keycloak
+      DATABASE_URL: jdbc:postgresql://postgres:5432/propostas
       ANALISE_URL: http://analise:9999/api/solicitacao
       CARTOES_URL: http://contas:8888/api/cartoes
     networks:

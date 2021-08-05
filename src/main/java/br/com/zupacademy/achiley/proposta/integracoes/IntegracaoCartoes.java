@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import br.com.zupacademy.achiley.proposta.aviso_viagem.NovoAvisoDeViagemRequest;
 import br.com.zupacademy.achiley.proposta.cartao.CartaoRequest;
 import br.com.zupacademy.achiley.proposta.cartao.CartaoResponse;
+import br.com.zupacademy.achiley.proposta.carteiras.NovaAssociacaoDeCarteiraRequest;
+import br.com.zupacademy.achiley.proposta.carteiras.NovaAssociacaoDeCarteiraResponse;
 
 @FeignClient(url = "${cartoes.url}", name = "cartoes")
 public interface IntegracaoCartoes {
@@ -24,4 +26,8 @@ public interface IntegracaoCartoes {
 	@PostMapping("/{id}/avisos")
 	public String notificaViagem(@PathVariable("id") String numeroDoCartao, 
 								   NovoAvisoDeViagemRequest request);
+	
+	@PostMapping("/{id}/carteiras")
+	public NovaAssociacaoDeCarteiraResponse associaCarteira(@PathVariable("id") String numeroDoCartao, 
+								   NovaAssociacaoDeCarteiraRequest request);
 }

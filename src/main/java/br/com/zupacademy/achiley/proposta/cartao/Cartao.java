@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 import br.com.zupacademy.achiley.proposta.aviso_viagem.AvisoDeViagem;
 import br.com.zupacademy.achiley.proposta.biometria.Biometria;
 import br.com.zupacademy.achiley.proposta.bloqueio.BloqueioDeCartoes;
+import br.com.zupacademy.achiley.proposta.carteiras.Carteira;
 import br.com.zupacademy.achiley.proposta.propostas.Proposta;
 import io.jsonwebtoken.lang.Assert;
 
@@ -51,6 +52,8 @@ public class Cartao {
 	@OneToMany(mappedBy = "cartao",cascade = CascadeType.MERGE)
 	@OrderBy("momentoDoAviso asc")
 	private SortedSet<AvisoDeViagem> avisosDeViagem = new TreeSet<>();
+	@OneToMany(mappedBy = "cartao", cascade = CascadeType.MERGE)
+	private Set<Carteira> carteiras = new HashSet<>();
 	
 	@Deprecated
 	public Cartao() {
@@ -104,11 +107,15 @@ public class Cartao {
 		return numero;
 	}
 
+	public StatusDoCartaoEnum getStatus() {
+		return status;
+	}
+
 	public SortedSet<AvisoDeViagem> getAvisosDeViagem() {
 		return avisosDeViagem;
 	}
 
-	public void adicionaBiometria(Biometria fingerPrint) {
+	public void adicionaBiometria(@NotNull Biometria fingerPrint) {
 		Assert.notNull(fingerPrint, "O objeto fingerPrint nao pode estar nulo");
 		this.biometrias.add(fingerPrint);
 	}
@@ -120,16 +127,28 @@ public class Cartao {
 		return false;
 	}
 
-	public void bloqueia(BloqueioDeCartoes bloqueio) {
+	public void bloqueia(@NotNull BloqueioDeCartoes bloqueio) {
 		Assert.isTrue(this.status.equals(StatusDoCartaoEnum.DESBLOQUEADO), "O cartao ja esta bloqueado");
 		Assert.notNull(bloqueio, "O objeto bloqueio nao pode estar nulo");
 		this.status = StatusDoCartaoEnum.BLOQUEADO;
 		this.bloqueio = bloqueio;
 	}
 
-	public void adicionaAvisoDeViagem(AvisoDeViagem avisoViagem) {
+	public void adicionaAvisoDeViagem(@NotNull AvisoDeViagem avisoViagem) {
 		Assert.notNull(avisoViagem, "O objeto avisoViagem nao pode estar nulo");
 		this.avisosDeViagem.add(avisoViagem);
+		
+	}
+	
+	public boolean possuiAssociacaoComEstaCarteira(Carteira carteira) {
+		Assert.notNull(carteira, "O objeto carteira nao pode estar nulo");
+		if(carteiras.contains(carteira)) return true;
+		return false;
+	}
+
+	public void associaCarteira(@NotNull Carteira carteira) {
+		Assert.notNull(carteira, "O objeto carteira nao pode estar nulo");
+		this.carteiras.add(carteira);
 		
 	}
 	

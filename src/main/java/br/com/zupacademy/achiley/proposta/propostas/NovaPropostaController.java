@@ -44,14 +44,13 @@ public class NovaPropostaController {
 		
 		if(!possivelProposta.isEmpty()) {
 			logger.info("Documento {} duplicado!", request.getDocumento());
-			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Este documento ja possui uma proposta");
+			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, 
+											 "Este documento ja possui uma proposta");
 		}
 		
 		Proposta proposta = request.converter();
 		transacional.persiste(proposta);
-		
-		logger.info("Proposta {} criada com sucesso!", proposta.getId());
-		
+
 		StatusDaPropostaEnum resultadoDaAnalise = analisador.analisa(proposta);
 		proposta.atualizaStatusDaProposta(resultadoDaAnalise);
 		

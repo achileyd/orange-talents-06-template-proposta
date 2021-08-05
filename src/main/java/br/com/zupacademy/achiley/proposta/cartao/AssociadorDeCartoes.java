@@ -46,7 +46,7 @@ public class AssociadorDeCartoes {
 				
 				transacional.atualiza(proposta);
 				
-				log.info("Foi criado um novo cartão de número {} para a proposta {}.", cartao.getNumero(), proposta.getId());
+				log.info("Foi criado um novo cartão de número {} para a proposta {}", cartao.getNumero(), proposta.getId());
 			} catch (FeignException e) {
 				log.error("Não foi possivel criar o cartão para a proposta {}. Motivo: {}", proposta.getId(), e.getMessage());
 			}
@@ -55,3 +55,5 @@ public class AssociadorDeCartoes {
 	}
 
 }
+
+

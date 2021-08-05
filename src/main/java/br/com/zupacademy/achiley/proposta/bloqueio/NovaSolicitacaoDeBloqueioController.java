@@ -25,7 +25,7 @@ public class NovaSolicitacaoDeBloqueioController {
 	private ContextoTransacional transacional;
 	private NotificadorDeBloqueios notificador;
 	
-	private final Logger logger = LoggerFactory.getLogger(NovaSolicitacaoDeBloqueioController.class);
+	private final Logger log = LoggerFactory.getLogger(NovaSolicitacaoDeBloqueioController.class);
 	
 	@Autowired
 	public NovaSolicitacaoDeBloqueioController(CartaoRepository repository, ContextoTransacional transacional,
@@ -42,7 +42,7 @@ public class NovaSolicitacaoDeBloqueioController {
 		String userAgent = httpRequest.getHeader(HttpHeaders.USER_AGENT);
 		
 		if(ip.isBlank() || userAgent.isBlank()) {
-			logger.info("Ip ou user-agent vazios." +
+			log.info("Ip ou user-agent vazios." +
 					     " user-agent: {}, ip: {}", userAgent, ip);
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
 					  "O ip e o user-agent nao podem estar vazios");
@@ -53,7 +53,7 @@ public class NovaSolicitacaoDeBloqueioController {
 						-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartao inexistente"));
 		
 		if (cartao.isBloqueado()){
-            logger.info("A tentativa de bloqueio falhou." +
+            log.info("A tentativa de bloqueio falhou." +
             		    " O cartão {} já esta bloqueado", cartao.getNumero());
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O cartão ja está bloqueado");
         }
