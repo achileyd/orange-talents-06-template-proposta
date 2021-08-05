@@ -18,7 +18,7 @@ public class NovaAssociacaoDeCarteiraRequest {
 	@JsonCreator
 	public NovaAssociacaoDeCarteiraRequest(@NotBlank String email, @NotBlank String carteira) {
 		this.email = email;
-		this.carteira = carteira;
+		this.carteira = carteira.replaceAll("\\s+","_");
 	}
 
 	public String getEmail() {
