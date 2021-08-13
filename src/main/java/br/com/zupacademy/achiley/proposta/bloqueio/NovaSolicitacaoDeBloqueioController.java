@@ -3,6 +3,8 @@ package br.com.zupacademy.achiley.proposta.bloqueio;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +26,17 @@ public class NovaSolicitacaoDeBloqueioController {
 	private CartaoRepository repository;
 	private ContextoTransacional transacional;
 	private NotificadorDeBloqueios notificador;
-	
+
+	private final Tracer tracer;
 	private final Logger log = LoggerFactory.getLogger(NovaSolicitacaoDeBloqueioController.class);
 	
 	@Autowired
 	public NovaSolicitacaoDeBloqueioController(CartaoRepository repository, ContextoTransacional transacional,
-			NotificadorDeBloqueios notificador) {
+											   NotificadorDeBloqueios notificador, Tracer tracer) {
 		this.repository = repository;
 		this.transacional = transacional;
 		this.notificador = notificador;
+		this.tracer = tracer;
 	}
 
 	@PostMapping(value = "cartoes/{id}/bloqueio")
@@ -51,7 +55,9 @@ public class NovaSolicitacaoDeBloqueioController {
 		Cartao cartao = repository.findById(id)
 						.orElseThrow(() 
 						-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartao inexistente"));
-		
+
+		Span activeSpan = tracer.activeSpan().setBaggageItem("user.email", cartao.getProposta().getEmail());
+
 		if (cartao.isBloqueado()){
             log.info("A tentativa de bloqueio falhou." +
             		    " O cartão {} já esta bloqueado", cartao.getNumero());

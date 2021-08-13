@@ -17,6 +17,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import br.com.zupacademy.achiley.proposta.config.security.Cryptography;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.Assert;
 
 import br.com.zupacademy.achiley.proposta.cartao.Cartao;
@@ -29,7 +31,6 @@ public class Proposta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@NotBlank
-	@Document
 	@Column(nullable = false)
 	private String documento;
 	@NotBlank
@@ -64,7 +65,7 @@ public class Proposta {
 		Assert.hasLength(endereco, "O endereco nao pode estar em branco");
 		Assert.isTrue(salario.intValue() > 0, "O salario deve ser maior que 0");
 		
-		this.documento = documento;
+		this.documento = Cryptography.encrypt(documento);
 		this.email = email;
 		this.nome = nome;
 		this.endereco = endereco;
@@ -111,7 +112,11 @@ public class Proposta {
 	}
 
 	public String getDocumento() {
-		return documento;
+		return Cryptography.decrypt(documento);
+	}
+
+	public String getEmail() {
+		return email;
 	}
 
 	public StatusDaPropostaEnum getStatus() {

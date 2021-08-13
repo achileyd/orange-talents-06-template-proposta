@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import br.com.zupacademy.achiley.proposta.aviso_viagem.NovoAvisoDeViagemRequest;
+import br.com.zupacademy.achiley.proposta.avisoViagem.NovoAvisoDeViagemRequest;
 import br.com.zupacademy.achiley.proposta.cartao.CartaoRequest;
 import br.com.zupacademy.achiley.proposta.cartao.CartaoResponse;
 import br.com.zupacademy.achiley.proposta.carteiras.NovaAssociacaoDeCarteiraRequest;

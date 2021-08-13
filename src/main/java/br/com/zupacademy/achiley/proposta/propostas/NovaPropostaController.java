@@ -6,6 +6,8 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,40 +28,44 @@ public class NovaPropostaController {
 	private PropostaRepository repository;
 	private ContextoTransacional transacional;
 	private AnalisadorDeProposta analisador;
-	
+
+	private final Tracer tracer;
 	private final Logger logger = LoggerFactory.getLogger(NovaPropostaController.class);
 	
 	@Autowired
 	public NovaPropostaController(PropostaRepository repository, ContextoTransacional transacional,
-			AnalisadorDeProposta analisador) {
+								  AnalisadorDeProposta analisador, Tracer tracer) {
 		this.repository = repository;
 		this.transacional = transacional;
 		this.analisador = analisador;
+		this.tracer = tracer;
 	}
 
 	@PostMapping(value="/propostas")
 	@Transactional
 	public ResponseEntity<?> criar(@RequestBody @Valid NovaPropostaRequest request, UriComponentsBuilder uriBuilder) {
+		Span activeSpan = tracer.activeSpan().setBaggageItem("user.email", request.getEmail());
+
 		Optional <Proposta> possivelProposta = repository.findByDocumento(request.getDocumento());
-		
+
 		if(!possivelProposta.isEmpty()) {
 			logger.info("Documento {} duplicado!", request.getDocumento());
-			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, 
+			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
 											 "Este documento ja possui uma proposta");
 		}
-		
+
 		Proposta proposta = request.converter();
 		transacional.persiste(proposta);
 
 		StatusDaPropostaEnum resultadoDaAnalise = analisador.analisa(proposta);
 		proposta.atualizaStatusDaProposta(resultadoDaAnalise);
-		
+
 		transacional.atualiza(proposta);
-		
+
 		logger.info("Proposta {} atualizada com status: {}.", proposta.getId(), resultadoDaAnalise);
-		
+
 		URI uri = uriBuilder.path("/propostas/{id}").build(proposta.getId());
-		
+
 		return ResponseEntity.created(uri).build();
 	}
 

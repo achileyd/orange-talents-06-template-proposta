@@ -1,9 +1,11 @@
-package br.com.zupacademy.achiley.proposta.aviso_viagem;
+package br.com.zupacademy.achiley.proposta.avisoViagem;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +29,15 @@ public class NovoAvisoDeViagemController {
 	private ContextoTransacional transacional;
 	private NotificadorDeViagem notificador;
 
+	private final Tracer tracer;
 	private final Logger log = LoggerFactory.getLogger(NovoAvisoDeViagemController.class);
 	
 	@Autowired
-	public NovoAvisoDeViagemController(CartaoRepository repository, ContextoTransacional transacional, NotificadorDeViagem notificador) {
+	public NovoAvisoDeViagemController(CartaoRepository repository, ContextoTransacional transacional, NotificadorDeViagem notificador, Tracer tracer) {
 		this.repository = repository;
 		this.transacional = transacional;
 		this.notificador = notificador;
+		this.tracer = tracer;
 	}
 	
 	@PostMapping(value = "cartoes/{id}/aviso-de-viagem")
@@ -49,18 +53,20 @@ public class NovoAvisoDeViagemController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
 					  						  "O ip e o user-agent nao podem estar vazios");
 		}
-		
+
 		Cartao cartao = repository.findById(id)
-						.orElseThrow(() 
+						.orElseThrow(()
 						-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartao inexistente"));
-		
+
+		Span activeSpan = tracer.activeSpan().setBaggageItem("user.email", cartao.getProposta().getEmail());
+
 		notificador.notificaViagem(request, cartao);
 		AvisoDeViagem novoAviso = request.converter(ip, userAgent, cartao);
 		transacional.persiste(novoAviso);
-		
+
 		cartao.adicionaAvisoDeViagem(novoAviso);
 		transacional.atualiza(cartao);
-		
+
 		return ResponseEntity.ok().build();
 	}
 

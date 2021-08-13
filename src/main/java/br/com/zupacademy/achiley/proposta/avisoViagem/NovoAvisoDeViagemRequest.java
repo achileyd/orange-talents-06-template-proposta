@@ -1,4 +1,4 @@
-package br.com.zupacademy.achiley.proposta.aviso_viagem;
+package br.com.zupacademy.achiley.proposta.avisoViagem;
 
 import java.time.LocalDate;
 

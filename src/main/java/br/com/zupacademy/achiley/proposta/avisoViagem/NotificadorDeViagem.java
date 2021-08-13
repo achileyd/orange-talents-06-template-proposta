@@ -1,4 +1,4 @@
-package br.com.zupacademy.achiley.proposta.aviso_viagem;
+package br.com.zupacademy.achiley.proposta.avisoViagem;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,6 +14,7 @@ import br.com.zupacademy.achiley.proposta.cartao.Cartao;
 import br.com.zupacademy.achiley.proposta.integracoes.IntegracaoCartoes;
 import feign.FeignException;
 
+@Validated
 @Component
 public class NotificadorDeViagem {
 	@Autowired

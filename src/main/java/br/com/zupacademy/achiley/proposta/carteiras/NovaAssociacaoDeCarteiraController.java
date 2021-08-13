@@ -4,6 +4,8 @@ import java.net.URI;
 
 import javax.transaction.Transactional;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +27,17 @@ public class NovaAssociacaoDeCarteiraController {
 	private CartaoRepository repository;
 	private ContextoTransacional transacional;
 	private AssociadorDeCarteiras associador;
-	
+
+	private final Tracer tracer;
 	private final Logger log = LoggerFactory.getLogger(NovaAssociacaoDeCarteiraController.class);
 	
 	@Autowired
 	public NovaAssociacaoDeCarteiraController(CartaoRepository repository, ContextoTransacional transacional,
-			AssociadorDeCarteiras associador) {
+											  AssociadorDeCarteiras associador, Tracer tracer) {
 		this.repository = repository;
 		this.transacional = transacional;
 		this.associador = associador;
+		this.tracer = tracer;
 	}
 
 	@PostMapping(value = "cartoes/{id}/carteiras")
@@ -43,7 +47,9 @@ public class NovaAssociacaoDeCarteiraController {
 		Cartao cartao = repository.findById(id)
 						.orElseThrow(() 
 						-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartao inexistente"));
-		
+
+		Span activeSpan = tracer.activeSpan().setBaggageItem("user.email", cartao.getProposta().getEmail());
+
 		Carteira novaCarteira =request.converter(cartao);
 		
 		if (cartao.possuiAssociacaoComEstaCarteira(novaCarteira)){

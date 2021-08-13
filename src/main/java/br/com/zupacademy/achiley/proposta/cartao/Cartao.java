@@ -22,7 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import br.com.zupacademy.achiley.proposta.aviso_viagem.AvisoDeViagem;
+import br.com.zupacademy.achiley.proposta.avisoViagem.AvisoDeViagem;
 import br.com.zupacademy.achiley.proposta.biometria.Biometria;
 import br.com.zupacademy.achiley.proposta.bloqueio.BloqueioDeCartoes;
 import br.com.zupacademy.achiley.proposta.carteiras.Carteira;
@@ -105,6 +105,10 @@ public class Cartao {
 
 	public String getNumero() {
 		return numero;
+	}
+
+	public Proposta getProposta() {
+		return proposta;
 	}
 
 	public StatusDoCartaoEnum getStatus() {
